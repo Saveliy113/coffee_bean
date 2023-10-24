@@ -1,40 +1,40 @@
-const path = require('path');
+const path = require("path");
 
 //Creates an index.html file (fully new or using defined template)
-const HTMLWebpackPlugin = require('html-webpack-plugin');
+const HTMLWebpackPlugin = require("html-webpack-plugin");
 
 //Extracts CSS code from JS file and creates one CSS file per JS file
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 //Minimizes CSS code in production build
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 //Minimizes Javascript Code in production build
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 //Deletes all files from dist folder before rebuild
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 //Copies static files to dist folder
-const CopyPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 //Replaces variables in code with other values or expressions at compile time.
-const { DefinePlugin } = require('webpack');
+const { DefinePlugin } = require("webpack");
 
-const isDev = process.env.NODE_ENV === 'development';
-const isProd = process.env.NODE_ENV === 'production';
+const isDev = process.env.NODE_ENV === "development";
+const isProd = process.env.NODE_ENV === "production";
 
 const fileName = (ext) => (isDev ? `[name].${ext}` : `[name].[hash].${ext}`);
 
 const cssLoaders = (extra) => {
   const loaders = [
     MiniCssExtractPlugin.loader,
-    'css-loader',
+    "css-loader",
     {
-      loader: 'postcss-loader',
+      loader: "postcss-loader",
       options: {
         postcssOptions: {
-          plugins: ['postcss-preset-env'],
+          plugins: ["postcss-preset-env"],
         },
       },
     },
@@ -60,32 +60,33 @@ const optimizationConfig = () => {
 
 const createWebpackConfig = () => {
   const config = {
-    mode: 'development',
-    context: path.resolve(__dirname, 'src'),
-    entry: './index.js',
+    mode: "development",
+    context: path.resolve(__dirname, "src"),
+    entry: "./index.js",
     output: {
-      path: path.resolve(__dirname, 'dist'),
-      filename: fileName('js'),
+      path: path.resolve(__dirname, "dist"),
+      filename: fileName("js"),
     },
     devServer: {
       port: 5000,
       hot: isDev,
-      watchFiles: ['src/*.html'],
+      watchFiles: ["src/*.html"],
     },
     plugins: [
       new HTMLWebpackPlugin({
-        template: './index.html',
+        template: "./index.html",
         minify: {
           collapseWhitespace: isProd,
         },
       }),
-      new MiniCssExtractPlugin({ filename: fileName('css') }),
+      new MiniCssExtractPlugin({ filename: fileName("css") }),
       new CleanWebpackPlugin(),
       new CopyPlugin({
-        patterns: [{ from: './assets', to: './assets' }],
+        patterns: [{ from: "./assets", to: "./assets" }],
       }),
       new DefinePlugin({
-        'process.env': JSON.stringify(process.env),
+        "process.env": JSON.stringify(process.env),
+        PRODUCTION: isProd ? JSON.stringify(true) : JSON.stringify(false),
       }),
     ],
     optimization: optimizationConfig(),
@@ -93,7 +94,7 @@ const createWebpackConfig = () => {
       rules: [
         {
           test: /\.html$/i,
-          loader: 'html-loader',
+          loader: "html-loader",
         },
         {
           test: /\.css$/i,
@@ -101,16 +102,16 @@ const createWebpackConfig = () => {
         },
         {
           test: /\.s[ac]ss$/i,
-          use: cssLoaders('sass-loader'),
+          use: cssLoaders("sass-loader"),
         },
-        { test: /\.(png|jpg|svg|gif)$/i, type: 'asset/resource' },
+        { test: /\.(png|jpg|svg|gif)$/i, type: "asset/resource" },
         {
           test: /\.m?js$/,
           exclude: /node_modules/,
           use: {
-            loader: 'babel-loader',
+            loader: "babel-loader",
             options: {
-              presets: ['@babel/preset-env'],
+              presets: ["@babel/preset-env"],
             },
           },
         },
@@ -119,7 +120,7 @@ const createWebpackConfig = () => {
   };
 
   if (isDev) {
-    config.devtool = 'source-map';
+    config.devtool = "source-map";
   }
 
   return config;
