@@ -1,5 +1,13 @@
 #enjoy {
+  position: relative;
   text-align: center;
+  border: 1px solid red;
+
+  > .coffee__blast {
+    position: absolute;
+    top: -25%;
+    left: 0;
+  }
 
   > .container {
     > .enjoy_content {
